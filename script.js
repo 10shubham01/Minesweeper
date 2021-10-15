@@ -21,37 +21,39 @@ function shuffle(array) {
   return array;
 }
 function createGrid() {
-  shuffle(arr).forEach((e) => {
+  shuffle(arr).forEach((e, i) => {
     let div = document.createElement("div");
     div.classList.add("card");
     div.innerText = e;
     div.classList.add("hide");
-    div.addEventListener("mousedown", onClick, { once: true });
+    setTimeout(() => {
+      div.classList.add("animate");
+    }, i * 300);
+    div.addEventListener("mousedown", onClick);
     div.addEventListener("contextmenu", onRightClick);
-
     document.querySelector(".container").append(div);
   });
 }
-let winCounter = 0;
+
 let bomCounter = 0;
-let flagConter = 0;
+let flagCounter = 0;
+
 function onClick(e) {
   if (e.which == 1) {
     e.target.classList.remove("hide");
     if (e.target.innerText == "bom") {
-      alert("game over");
-      location.reload();
-    } else if (e.target.innerText == "blank") {
-      winCounter++;
-      if (winCounter == 5) {
-        alert("you win");
-      }
+      popUp(" Bom : Game Over");
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
     }
+  } else {
+    return;
   }
 }
 let temp = [];
 function onRightClick(e) {
-  if (flagConter < 4) {
+  if (flagCounter < 4) {
     if (e.which == 3) {
       e.preventDefault();
       temp.push(e.target.innerText);
@@ -59,26 +61,30 @@ function onRightClick(e) {
         e.target.innerText = temp[0];
         e.target.classList.add("hide");
         temp = [];
-        flagConter--;
+        flagCounter--;
       } else {
         if (e.target.innerText == "bom") {
           bomCounter++;
           if (bomCounter == 4) {
-            alert("ALl boms are flagged");
+            popUp("ALl boms are flagged you win !");
             temp = [];
-            location.reload();
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
           }
         }
         e.target.innerText = "Flag";
         e.target.classList.remove("hide");
-        flagConter++;
+        flagCounter++;
       }
-
-      console.log(e.target.innerText);
     }
   } else {
-    alert("You have crossed Flag limit");
-    flagConter - 1;
+    alert("You have crossed Flag limit ");
+    flagCounter = flagCounter - 1;
   }
+}
+function popUp(message) {
+  return (document.querySelector("body").innerHTML =
+    "<h1>" + message + "<h1/>");
 }
 createGrid();
